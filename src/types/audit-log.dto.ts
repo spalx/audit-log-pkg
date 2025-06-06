@@ -1,20 +1,30 @@
 import { z } from 'zod';
 
+export interface AuditLogAuthor {
+  id: string;
+  name: string;
+}
+
 export interface CreateLogDTO {
   client: string;
-  author: string;
-  date: Date;
+  author: AuditLogAuthor;
   action: string;
+  date?: Date;
   meta?: Record<string, unknown>;
 }
 
 export interface DidCreateLogDTO {
 }
 
+const AuditLogAuthorSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
 export const CreateLogDTOSchema = z.object({
   client: z.string(),
-  author: z.string(),
-  date: z.date(),
+  author: AuditLogAuthorSchema,
   action: z.string(),
+  date: z.date().optional(),
   meta: z.object({}).optional(),
 });

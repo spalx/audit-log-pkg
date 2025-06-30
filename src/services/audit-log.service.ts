@@ -5,8 +5,8 @@ import {
 } from 'kafka-pkg';
 import { IAppPkg } from 'app-life-cycle-pkg';
 
-import { CreateLogDTO, DidCreateLogDTO, CreateLogDTOSchema } from '@/types/audit-log.dto';
-import { AuditLogKafkaTopic } from '@/common/constants';
+import { CreateLogDTO, DidCreateLogDTO, CreateLogDTOSchema } from '../types/audit-log.dto';
+import { AuditLogKafkaTopic } from '../common/constants';
 
 class AuditLogService implements IAppPkg {
   private correlatedKafkaRequest: CorrelatedKafkaRequest | null = null;

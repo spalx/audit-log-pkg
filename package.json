@@ -1,18 +1,14 @@
 {
   "name": "audit-log-pkg",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
   },
   "dependencies": {
-    "app-life-cycle-pkg": "git+git@github.com:spalx/app-life-cycle-pkg.git#1.0.2",
-    "kafka-pkg": "git+git@github.com:spalx/kafka-pkg.git#1.0.2",
+    "app-life-cycle-pkg": "git+git@github.com:spalx/app-life-cycle-pkg.git#1.0.3",
+    "kafka-pkg": "git+git@github.com:spalx/kafka-pkg.git#1.0.3",
     "zod": "^3.25.49"
   },
   "devDependencies": {

@@ -1,30 +1,36 @@
-import {
-  CorrelatedRequestDTO,
-  CorrelatedResponseDTO,
-  CorrelatedKafkaRequest
-} from 'kafka-pkg';
-import { IAppPkg } from 'app-life-cycle-pkg';
+import { v4 as uuidv4 } from 'uuid';
+import { CorrelatedResponseDTO, TransportAwareService, transportService } from 'transport-pkg';
+import { throwErrorForStatus } from 'rest-pkg';
+import { IAppPkg, AppRunPriority } from 'app-life-cycle-pkg';
 
-import { CreateLogDTO, DidCreateLogDTO, CreateLogDTOSchema } from '../types/audit-log.dto';
-import { AuditLogKafkaTopic } from '../common/constants';
+import { CreateLogDTO, DidCreateLogDTO } from '../types/audit-log.dto';
+import { AuditLogAction } from '../common/constants';
 
-class AuditLogService implements IAppPkg {
-  private correlatedKafkaRequest: CorrelatedKafkaRequest | null = null;
-
+class AuditLogService extends TransportAwareService implements IAppPkg {
   async init(): Promise<void> {
-    if (!this.correlatedKafkaRequest) {
-      this.correlatedKafkaRequest = new CorrelatedKafkaRequest(AuditLogKafkaTopic.CreateLog);
-    }
+    transportService.transportsSend([AuditLogAction.CreateLog]);
   }
 
-  async createLog(data: CorrelatedRequestDTO<CreateLogDTO>): Promise<CorrelatedResponseDTO<DidCreateLogDTO>> {
-    if (!this.correlatedKafkaRequest) {
-      throw new Error('Audit log service not initialized');
+  getPriority(): number {
+    return AppRunPriority.Highest;
+  }
+
+  async createLog(data: CreateLogDTO, correlationId?: string): Promise<DidCreateLogDTO> {
+    const response: CorrelatedResponseDTO<DidCreateLogDTO> = await transportService.send(
+      {
+        action: AuditLogAction.CreateLog,
+        data,
+        correlation_id: correlationId || uuidv4(),
+        transport_name: this.getActiveTransport()
+      },
+      this.getActiveTransportOptions()
+    );
+
+    if (response.status !== 0) {
+      throwErrorForStatus(response.status, response.error || '');
     }
 
-    CreateLogDTOSchema.parse(data.data);
-
-    return await this.correlatedKafkaRequest.send(data) as CorrelatedResponseDTO<DidCreateLogDTO>;
+    return response.data as DidCreateLogDTO;
   }
 }
 

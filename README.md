@@ -1,54 +1,45 @@
-# email-delivery-pkg
+# audit-log-pkg
 
-Package which enables to connect to the email-delivery service easily, releasing the need of connecting to the respective Kafka topics.
+## auditLogService
 
-## Dependencies
+Instance of `AuditLogService` used for creating audit logs.<br>
+Since this service implements the IAppPkg interface, the recommended way of using it is by registering it in your app initialization script like this:
 
-This service depends on kafka-pkg repository.
+```ts
+// appService is an instance of AppService (app-life-cycle-pkg)
+appService.use(auditLogService);
+```
 
----
-
-## Functions
+### auditLogService methods
 
 | Function | Argument Types | Returns | Description |
 | - | - | - | - |
-| `sendEmail(dto, callback?)` | `dto: CorrelatedRequestDTO<SendEmailDTO>`,<br>`callback?: (response: CorrelatedResponseDTO<DidSendEmailDTO>) => void` | `void`  | Sends an email via Kafka and optionally registers a callback for response |
-| `validateSendEmailDTO(data)` | `data: SendEmailDTO` | `void` | Validates the data and throws an error when validation fails |
+| `createLog(data)` | `data: CreateLogDTO` | `Promise<DidCreateLogDTO>`  | Creates an audit log |
 
 ---
 
 ## DTO Interfaces
 
-### SendEmailDTO interface
+### CreateLogDTO interface
 
 | Key | Type | Notes |
 | - | - | - |
-| from | string | Sender address |
-| to | string[] | One or more recipient addresses |
-| subject | string | Email subject line |
-| body | string | HTML content of the email |
-| attachments | Record\<string, Blob\>, optional | Filename→Blob map for attachments |
-| inline | Record\<string, Blob\>, optional | Filename→Blob map for inline images |
-| cc | string[], optional | CC email addresses |
-| bcc | string[], optional | BCC email addresses |
-| replyTo | string, optional | Reply-To header address |
+| client | string | Name of the client app |
+| author | AuditLogAuthor | The user performing the action |
+| action | string | The action performed |
+| date | Date, optional | When was the action performed |
+| meta | `Record<string, unknown>`, optional | Additional meta data |
 
+### AuditLogAuthor interface
 
-### DidSendEmailDTO interface
-
-| Key | Type | Possible values |
+| Key | Type | Notes |
 | - | - | - |
-| to | string[] | |
-| subject | string | |
+| id | string | Unique identificator of the user |
+| name | string | Name of the user |
 
-### CorrelatedResponseDTO\<T\> interface
+### DidCreateLogDTO interface
 
-Check kafka-pkg repository for details.
-
-
-### CorrelatedRequestDTO\<T\> interface
-
-Check kafka-pkg repository for details.
+Empty object
 
 ---
 
@@ -56,10 +47,8 @@ Check kafka-pkg repository for details.
 
 ```ts
 import {
-  sendEmail,
-  SendEmailDTO,
-  DidSendEmailDTO,
-  EmailKafkaTopic,
-  validateSendEmailDTO
-} from 'email-delivery-pkg';
+  auditLogService,
+  CreateLogDTO,
+  DidCreateLogDTO
+} from 'audit-log-pkg';
 ```

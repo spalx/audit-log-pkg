@@ -1,36 +1,29 @@
 import { v4 as uuidv4 } from 'uuid';
-import { CorrelatedResponseDTO, TransportAwareService, transportService } from 'transport-pkg';
-import { throwErrorForStatus } from 'rest-pkg';
+import { CorrelatedMessage, TransportAwareService, TransportAdapterName, transportService } from 'transport-pkg';
 import { IAppPkg, AppRunPriority } from 'app-life-cycle-pkg';
 
-import { CreateLogDTO, DidCreateLogDTO } from '../types/audit-log.dto';
+import { CreateLogDTO } from '../types/audit-log.dto';
 import { AuditLogAction } from '../common/constants';
 
 class AuditLogService extends TransportAwareService implements IAppPkg {
   async init(): Promise<void> {
-    transportService.transportsSend([AuditLogAction.CreateLog]);
+    //TODO: use service-discovery here
+    this.useTransport(TransportAdapterName.HTTP, { host: 'audit-log', port: 3050 });
   }
 
   getPriority(): number {
     return AppRunPriority.Highest;
   }
 
-  async createLog(data: CreateLogDTO, correlationId?: string): Promise<DidCreateLogDTO> {
-    const response: CorrelatedResponseDTO<DidCreateLogDTO> = await transportService.send(
-      {
-        action: AuditLogAction.CreateLog,
-        data,
-        correlation_id: correlationId || uuidv4(),
-        transport_name: this.getActiveTransport()
-      },
-      this.getActiveTransportOptions()
+  async createLog(data: CreateLogDTO, correlationId?: string): Promise<void> {
+    const message: CorrelatedMessage = CorrelatedMessage.create(
+      correlationId || uuidv4(),
+      AuditLogAction.CreateLog,
+      this.getActiveTransport(),
+      data
     );
 
-    if (response.status !== 0) {
-      throwErrorForStatus(response.status, response.error || '');
-    }
-
-    return response.data as DidCreateLogDTO;
+    await transportService.send(message, this.getActiveTransportOptions());
   }
 }
 

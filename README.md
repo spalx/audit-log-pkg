@@ -14,7 +14,7 @@ appService.use(auditLogService);
 
 | Function | Argument Types | Returns | Description |
 | - | - | - | - |
-| `createLog(data)` | `data: CreateLogDTO` | `Promise<DidCreateLogDTO>`  | Creates an audit log |
+| `createLog(data)` | `data: CreateLogDTO` | `Promise<void>`  | Creates an audit log |
 
 ---
 
@@ -37,10 +37,6 @@ appService.use(auditLogService);
 | id | string | Unique identificator of the user |
 | name | string | Name of the user |
 
-### DidCreateLogDTO interface
-
-Empty object
-
 ---
 
 ## Imports
@@ -48,7 +44,6 @@ Empty object
 ```ts
 import {
   auditLogService,
-  CreateLogDTO,
-  DidCreateLogDTO
+  CreateLogDTO
 } from 'audit-log-pkg';
 ```

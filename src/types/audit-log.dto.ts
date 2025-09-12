@@ -13,9 +13,6 @@ export interface CreateLogDTO {
   meta?: Record<string, unknown>;
 }
 
-export interface DidCreateLogDTO {
-}
-
 const AuditLogAuthorSchema = z.object({
   id: z
     .string({

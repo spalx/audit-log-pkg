@@ -1,14 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
 import { CorrelatedMessage, TransportAwareService, TransportAdapterName, transportService } from 'transport-pkg';
 import { IAppPkg, AppRunPriority } from 'app-life-cycle-pkg';
+import { serviceDiscoveryService, ServiceDTO } from 'service-discovery-pkg';
 
 import { CreateLogDTO } from '../types/audit-log.dto';
-import { AuditLogAction } from '../common/constants';
+import { AuditLogAction, SERVICE_NAME } from '../common/constants';
 
 class AuditLogService extends TransportAwareService implements IAppPkg {
   async init(): Promise<void> {
-    //TODO: use service-discovery here
-    this.useTransport(TransportAdapterName.HTTP, { host: 'audit-log', port: 3050 });
+    const service: ServiceDTO = await serviceDiscoveryService.getService(SERVICE_NAME);
+
+    this.useTransport(TransportAdapterName.HTTP, { host: service.host, port: service.port });
   }
 
   getPriority(): number {

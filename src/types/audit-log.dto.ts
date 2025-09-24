@@ -1,20 +1,20 @@
 import { z } from 'zod';
 
-export interface AuditLogAuthor {
+export interface LogAuthor {
   id: string;
   name: string;
 }
 
-export interface CreateLogDTO {
+export interface LogDTO {
   client: string;
-  author: AuditLogAuthor;
+  author: LogAuthor;
   action: string;
   target_id?: string;
   date?: Date;
   meta?: Record<string, unknown>;
 }
 
-const AuditLogAuthorSchema = z.object({
+const LogAuthorSchema = z.object({
   id: z.string({
     required_error: 'id is required',
     invalid_type_error: 'id must be a string',
@@ -26,13 +26,13 @@ const AuditLogAuthorSchema = z.object({
   }).min(1, 'name cannot be empty'),
 });
 
-export const CreateLogDTOSchema = z.object({
+export const LogDTOSchema = z.object({
   client: z.string({
     required_error: 'client is required',
     invalid_type_error: 'client must be a string',
   }).min(1, 'client cannot be empty'),
 
-  author: AuditLogAuthorSchema,
+  author: LogAuthorSchema,
 
   action: z.string({
     required_error: 'action is required',

@@ -2,8 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { CorrelatedMessage, TransportAwareService, TransportAdapterName, transportService } from 'transport-pkg';
 import { IAppPkg, AppRunPriority } from 'app-life-cycle-pkg';
 import { serviceDiscoveryService, ServiceDTO } from 'service-discovery-pkg';
+import { GetAllRestQueryParams, GetAllRestPaginatedResponse } from 'rest-pkg';
 
-import { CreateLogDTO } from '../types/audit-log.dto';
+import { LogDTO } from '../types/audit-log.dto';
 import { AuditLogAction, SERVICE_NAME } from '../common/constants';
 
 class AuditLogService extends TransportAwareService implements IAppPkg {
@@ -17,15 +18,24 @@ class AuditLogService extends TransportAwareService implements IAppPkg {
     return AppRunPriority.Medium;
   }
 
-  async createLog(data: CreateLogDTO, correlationId?: string): Promise<void> {
+  async createLog(data: LogDTO, correlationId?: string): Promise<void> {
+    await this.sendActionViaTransport(AuditLogAction.CreateLog, data, correlationId);
+  }
+
+  async getLogs(data: GetAllRestQueryParams, correlationId?: string): Promise<GetAllRestPaginatedResponse<LogDTO>> {
+    return (await this.sendActionViaTransport(AuditLogAction.GetLogs, data, correlationId) as GetAllRestPaginatedResponse<LogDTO>);
+  }
+
+  private async sendActionViaTransport(action: AuditLogAction, data: object, correlationId?: string): Promise<object> {
     const message: CorrelatedMessage = CorrelatedMessage.create(
       correlationId || uuidv4(),
-      AuditLogAction.CreateLog,
+      action,
       this.getActiveTransport(),
       data
     );
 
-    await transportService.send(message, this.getActiveTransportOptions());
+    const response: CorrelatedMessage = await transportService.send(message, this.getActiveTransportOptions());
+    return response.data;
   }
 }
 

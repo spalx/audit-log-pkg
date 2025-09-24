@@ -14,7 +14,7 @@ class AuditLogService extends TransportAwareService implements IAppPkg {
   }
 
   getPriority(): number {
-    return AppRunPriority.Highest;
+    return AppRunPriority.Medium;
   }
 
   async createLog(data: CreateLogDTO, correlationId?: string): Promise<void> {

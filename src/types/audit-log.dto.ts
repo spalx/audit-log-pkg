@@ -6,7 +6,6 @@ export interface LogAuthor {
 }
 
 export interface LogDTO {
-  client: string;
   author: LogAuthor;
   action: string;
   target_id?: string;
@@ -27,11 +26,6 @@ const LogAuthorSchema = z.object({
 });
 
 export const LogDTOSchema = z.object({
-  client: z.string({
-    required_error: 'client is required',
-    invalid_type_error: 'client must be a string',
-  }).min(1, 'client cannot be empty'),
-
   author: LogAuthorSchema,
 
   action: z.string({

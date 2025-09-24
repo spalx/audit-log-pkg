@@ -18,6 +18,17 @@ class AuditLogService extends TransportAwareService implements IAppPkg {
     return AppRunPriority.Medium;
   }
 
+  getName(): string {
+    return 'audit-log';
+  }
+
+  getDependencies(): IAppPkg[] {
+    return [
+      transportService,
+      serviceDiscoveryService
+    ];
+  }
+
   async createLog(data: LogDTO, correlationId?: string): Promise<void> {
     await this.sendActionViaTransport(AuditLogAction.CreateLog, data, correlationId);
   }

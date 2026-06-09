@@ -1,21 +1,21 @@
 {
-  "name": "audit-log-pkg",
-  "version": "1.1.1",
+  "name": "@spalx/audit-log-pkg",
+  "version": "1.1.2",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
   },
   "dependencies": {
-    "app-life-cycle-pkg": "git+git@github.com:spalx/app-life-cycle-pkg.git#1.0.7",
-    "rest-pkg": "git+git@github.com:spalx/rest-pkg.git#1.0.5",
-    "service-discovery-pkg": "git+git@github.com:spalx/service-discovery-pkg.git#1.0.3",
-    "transport-pkg": "git+git@github.com:spalx/transport-pkg.git#1.1.8",
-    "uuid": "^13.0.0",
+    "@spalx/app-life-cycle-pkg": "^1.0.8",
+    "@spalx/rest-pkg": "^1.0.7",
+    "@spalx/service-discovery-pkg": "^1.0.5",
+    "@spalx/transport-pkg": "^1.2.2",
+    "uuid": "^14.0.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@types/node": "^24.7.0",
-    "typescript": "^5.9.3"
+    "@types/node": "^25.9.2",
+    "typescript": "^6.0.3"
   }
 }

@@ -11,6 +11,7 @@ export interface LogDTO {
   target_id?: string;
   date?: Date;
   meta?: Record<string, unknown>;
+  tokens?: string[];
 }
 
 const LogAuthorSchema = z.object({
@@ -24,4 +25,5 @@ export const LogDTOSchema = z.object({
   target_id: z.string('target_id must be a string').optional(),
   date: z.iso.date('date must be a date').optional(),
   meta: z.record(z.string(), z.unknown(), 'meta must be an object with string keys').optional(),
+  tokens: z.array(z.string()).optional()
 });
